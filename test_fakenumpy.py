@@ -1,5 +1,6 @@
 import ctypes
 import fakenumpy
+import fakenumpy_test
 import numpypy as np
 
 def build_typedict():
@@ -39,7 +40,7 @@ def test_SimpleNewFromData():
 
 def _import_c_tests():
     glob = globals()
-    for name, value in fakenumpy.__dict__.iteritems():
+    for name, value in fakenumpy_test.__dict__.iteritems():
         if name.startswith('_test'):
             def fn(test=value):
                 test()

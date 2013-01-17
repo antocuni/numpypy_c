@@ -78,8 +78,8 @@ static PyTypeObject PyArray_Type = {
 };
 
 
-PyObject*
-PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data) {
+static PyObject*
+PyArray_SimpleNewFromData_impl(int nd, npy_intp* dims, int typenum, void* data) {
     PyObject *obj = PyObject_CallObject((PyObject *) &PyArray_Type, NULL);
     PyArrayObject* array = (PyArrayObject*)obj;
     int i;
@@ -92,6 +92,10 @@ PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data) {
     return obj;
 }
 
+static void* _FakeNumPy_API[] = {
+    (void*)PyArray_SimpleNewFromData_impl
+};
+
 
 static PyObject*
 fakenumpy__frombuffer_2_2(PyObject *self, PyObject *args)
@@ -103,51 +107,13 @@ fakenumpy__frombuffer_2_2(PyObject *self, PyObject *args)
         return NULL;
     void* data = (void*)address;
 
-    PyObject* obj = PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
+    PyObject* obj = PyArray_SimpleNewFromData_impl(2, dims, PyArray_FLOAT64, data);
     return obj;
-}
-
-static PyObject*
-fakenumpy__test_DIMS() {
-    double data[4] = {1, 2, 3, 4};
-    npy_intp dims[2] = {2, 2};
-    PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
-    //
-    py_assert(PyArray_NDIM(array) == 2);
-    npy_intp* dims2 = PyArray_DIMS(array);
-    py_assert(dims2[0] == 2);
-    py_assert(dims2[1] == 2);
-
-    Py_RETURN_NONE;
-}
-
-static PyObject*
-fakenumpy__test_Return() {
-    double data[4] = {1, 2, 3, 4};
-    npy_intp dims[2] = {2, 2};
-    PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
-    //
-    py_assert(PyArray_Return(array) == array);
-    Py_RETURN_NONE;
-}
-
-static PyObject*
-fakenumpy__test_DATA() {
-    double data[4] = {1, 2, 3, 4};
-    npy_intp dims[2] = {2, 2};
-    PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
-    //
-    void* data2 = PyArray_DATA(array);
-    py_assert(data2 == (void*)(data));
-    Py_RETURN_NONE;
 }
 
 
 static PyMethodDef fakenumpy_methods[] = {
     {"_frombuffer_2_2", fakenumpy__frombuffer_2_2, METH_VARARGS, "..."},
-    {"_test_DIMS", fakenumpy__test_DIMS, METH_NOARGS, "..."},
-    {"_test_Return", fakenumpy__test_Return, METH_NOARGS, "..."},
-    {"_test_DATA", fakenumpy__test_DATA, METH_NOARGS, "..."},
     {NULL}  /* Sentinel */
 };
 
@@ -158,14 +124,16 @@ PyMODINIT_FUNC
 initfakenumpy(void) 
 {
     PyObject* m;
+    FakeNumPy_API = _FakeNumPy_API;
 
     PyArray_Type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&PyArray_Type) < 0)
         return;
 
     m = Py_InitModule3("fakenumpy", fakenumpy_methods,
-                       "Example module that creates an extension type.");
+                       "fake numpy C compatibility layer");
 
     Py_INCREF(&PyArray_Type);
     PyModule_AddObject(m, "fakearray", (PyObject *)&PyArray_Type);
+    PyModule_AddObject(m, "_API", PyCObject_FromVoidPtr(FakeNumPy_API, NULL));
 }

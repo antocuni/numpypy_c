@@ -39,10 +39,12 @@ typedef struct {
     void* data;
 } PyArrayObject;
 
-static PyTypeObject PyArray_Type;
+static void** FakeNumPy_API;
 
-PyObject*
-PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data);
+typedef PyObject* (*PyArray_SimpleNewFromData_type)(int nd, npy_intp* dims, 
+                                                    int typenum, void* data);
+
+#define PyArray_SimpleNewFromData ((PyArray_SimpleNewFromData_type)FakeNumPy_API[0])
 
 #define PyArray_NDIM(array) (array->ndims)
 #define PyArray_DIMS(array) (array->dims)
@@ -51,5 +53,37 @@ PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data);
 // XXX: we don't properly implement PyArray_Return if ndims is ==0, because we
 // never needed it so far
 #define PyArray_Return(array) (assert(array->ndims > 0), array)
+
+static int 
+import_array(void) {
+    PyObject* fakenumpy = PyImport_ImportModule("fakenumpy");
+    PyObject *c_api = NULL;
+
+    if (fakenumpy == NULL) {
+        PyErr_SetString(PyExc_ImportError, "fakenumpy failed to import");
+        return -1;
+    }
+
+    c_api = PyObject_GetAttrString(fakenumpy, "_API");
+    Py_DECREF(fakenumpy);
+    if (c_api == NULL) {
+        PyErr_SetString(PyExc_AttributeError, "_API not found");
+        return -1;
+    }
+
+    if (!PyCObject_Check(c_api)) {
+        PyErr_SetString(PyExc_RuntimeError, "_API is not PyCObject object");
+        Py_DECREF(c_api);
+        return -1;
+    }
+    FakeNumPy_API = (void **)PyCObject_AsVoidPtr(c_api);
+    
+    Py_DECREF(c_api);
+    if (FakeNumPy_API == NULL) {
+        PyErr_SetString(PyExc_RuntimeError, "_API is NULL pointer");
+        return -1;
+    }
+    return 0;
+}
 
 #endif
