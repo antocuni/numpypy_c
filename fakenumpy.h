@@ -46,6 +46,7 @@ PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data);
 
 #define PyArray_NDIM(array) (array->ndims)
 #define PyArray_DIMS(array) (array->dims)
+#define PyArray_DATA(array) (array->data)
 
 // XXX: we don't properly implement PyArray_Return if ndims is ==0, because we
 // never needed it so far

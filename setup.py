@@ -1,7 +1,8 @@
 from distutils.core import setup, Extension
 
 fakenumpy = Extension('fakenumpy',
-                      sources = ['fakenumpy.c'])
+                      sources = ['fakenumpy.c'],
+                      depends = ['fakenumpy.h'])
 
 setup(name = 'fakenumpy',
       version = '0.1',

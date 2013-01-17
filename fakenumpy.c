@@ -131,11 +131,23 @@ fakenumpy__test_Return() {
     Py_RETURN_NONE;
 }
 
+static PyObject*
+fakenumpy__test_DATA() {
+    double data[4] = {1, 2, 3, 4};
+    npy_intp dims[2] = {2, 2};
+    PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
+    //
+    void* data2 = PyArray_DATA(array);
+    py_assert(data2 == (void*)(data));
+    Py_RETURN_NONE;
+}
+
 
 static PyMethodDef fakenumpy_methods[] = {
     {"_frombuffer_2_2", fakenumpy__frombuffer_2_2, METH_VARARGS, "..."},
     {"_test_DIMS", fakenumpy__test_DIMS, METH_NOARGS, "..."},
     {"_test_Return", fakenumpy__test_Return, METH_NOARGS, "..."},
+    {"_test_DATA", fakenumpy__test_DATA, METH_NOARGS, "..."},
     {NULL}  /* Sentinel */
 };
 
