@@ -4,6 +4,14 @@
 #include <assert.h>
 #include "fakenumpy.h"
 
+#define py_assert(e) {                                                  \
+        if (!(e)) {                                                     \
+            PyErr_Format(PyExc_AssertionError, "%s:%u %s",              \
+                         __FILE__, __LINE__, #e);                       \
+            return NULL;                                                \
+        }                                                               \
+    }
+
 static PyObject*
 PyArray_getbuffer(PyArrayObject* self) {
     return Py_BuildValue("l", (long)self->data);
@@ -85,7 +93,7 @@ PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data) {
 }
 
 
-static PyObject *
+static PyObject*
 fakenumpy__frombuffer_2_2(PyObject *self, PyObject *args)
 {
     npy_intp dims[2] = {2, 2};
@@ -99,9 +107,23 @@ fakenumpy__frombuffer_2_2(PyObject *self, PyObject *args)
     return obj;
 }
 
+static PyObject*
+fakenumpy__test_DIMS() {
+    double data[4] = {1, 2, 3, 4};
+    npy_intp dims[2] = {2, 2};
+    PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
+    //
+    py_assert(PyArray_NDIM(array) == 2);
+    npy_intp* dims2 = PyArray_DIMS(array);
+    py_assert(dims2[0] == 2);
+    py_assert(dims2[1] == 2);
+
+    Py_RETURN_NONE;
+}
 
 static PyMethodDef fakenumpy_methods[] = {
     {"_frombuffer_2_2", fakenumpy__frombuffer_2_2, METH_VARARGS, "..."},
+    {"_test_DIMS", fakenumpy__test_DIMS, METH_NOARGS, "..."},
     {NULL}  /* Sentinel */
 };
 

@@ -36,3 +36,14 @@ def test_SimpleNewFromData():
     #
     array[0, 0] = 42
     assert buf[0] == 42
+
+def _import_c_tests():
+    glob = globals()
+    for name, value in fakenumpy.__dict__.iteritems():
+        if name.startswith('_test'):
+            def fn(test=value):
+                test()
+            fn.__name__ = name[1:]
+            glob[name[1:]] = fn
+
+_import_c_tests()

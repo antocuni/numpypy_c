@@ -44,4 +44,7 @@ static PyTypeObject PyArray_Type;
 PyObject*
 PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data);
 
+#define PyArray_NDIM(array) (array->ndims)
+#define PyArray_DIMS(array) (array->dims)
+
 #endif
