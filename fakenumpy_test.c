@@ -2,7 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+#ifdef PYPY_VERSION
+// if we are testing on pypy, use the fake C API
 #include "fakenumpy.h"
+#else
+// else, use the real numpy
+#include <numpy/arrayobject.h>
+#endif
 
 #define py_assert(e) {                                                  \
         if (!(e)) {                                                     \
@@ -14,7 +21,7 @@
 
 
 static PyObject*
-_test_DIMS() {
+_test_DIMS(PyObject* self, PyObject* args) {
     double data[4] = {1, 2, 3, 4};
     npy_intp dims[2] = {2, 2};
     PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
@@ -28,17 +35,17 @@ _test_DIMS() {
 }
 
 static PyObject*
-_test_Return() {
+_test_Return(PyObject* self, PyObject* args) {
     double data[4] = {1, 2, 3, 4};
     npy_intp dims[2] = {2, 2};
     PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
     //
-    py_assert(PyArray_Return(array) == array);
+    py_assert(PyArray_Return(array) == (void*)array);
     Py_RETURN_NONE;
 }
 
 static PyObject*
-_test_DATA() {
+_test_DATA(PyObject* self, PyObject* args) {
     double data[4] = {1, 2, 3, 4};
     npy_intp dims[2] = {2, 2};
     PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
@@ -66,6 +73,5 @@ initfakenumpy_test(void)
 
     m = Py_InitModule3("fakenumpy_test", fakenumpy_test_methods,
                        "C tests for fakenumpy");
-    if (import_array() == -1)
-        PyErr_Print();
+    import_array();
 }

@@ -1,28 +1,38 @@
+import py
 import ctypes
 import fakenumpy
 import fakenumpy_test
-import numpypy as np
+try:
+    import numpypy as np
+    is_pypy = True
+except ImportError:
+    import numpy as np
+    is_pypy = False
 
-def build_typedict():
-    d = {}
-    for info in np.typeinfo.itervalues():
-        if isinstance(info, tuple):
-            dtype = info[-1]
-            d[info[0]] = dtype
-            d[info[1]] = dtype
-    return d
 
-TYPEDICT = build_typedict()
+if is_pypy:
+    def build_typedict():
+        d = {}
+        for info in np.typeinfo.itervalues():
+            if isinstance(info, tuple):
+                dtype = info[-1]
+                d[info[0]] = dtype
+                d[info[1]] = dtype
+        return d
 
-def _toarray(fakearray):
-    typenum = fakearray.gettypenum()
-    dtype = TYPEDICT[typenum]
-    return np.ndarray._from_shape_and_storage(fakearray.getshape(),
-                                              fakearray.getbuffer(),
-                                              dtype)
+    TYPEDICT = build_typedict()
+
+    def _toarray(fakearray):
+        typenum = fakearray.gettypenum()
+        dtype = TYPEDICT[typenum]
+        return np.ndarray._from_shape_and_storage(fakearray.getshape(),
+                                                  fakearray.getbuffer(),
+                                                  dtype)
 
 
 def test_SimpleNewFromData():
+    if not is_pypy:
+        py.test.skip("pypy only test")
     buf = (ctypes.c_double*4)(1, 2, 3, 4)
     addr = ctypes.cast(buf, ctypes.c_void_p).value
     fakearray = fakenumpy._frombuffer_2_2(addr)
