@@ -1,6 +1,7 @@
 #include <Python.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "fakenumpy.h"
 
 static PyObject*
@@ -74,6 +75,7 @@ PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data) {
     PyObject *obj = PyObject_CallObject((PyObject *) &PyArray_Type, NULL);
     PyArrayObject* array = (PyArrayObject*)obj;
     int i;
+    assert(nd<=10); // this is the size of the array in PyArrayObject
     array->ndims = nd;
     for(i=0; i<nd; i++)
         array->dims[i] = dims[i];
