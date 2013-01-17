@@ -1,11 +1,39 @@
 #include <Python.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "fakenumpy.h"
 
-typedef struct {
-    PyObject_HEAD
-    /* Type-specific fields go here. */
-} PyArrayObject;
+static PyObject*
+PyArray_getbuffer(PyArrayObject* self) {
+    return Py_BuildValue("l", (long)self->data);
+}
+
+static PyObject*
+PyArray_getshape(PyArrayObject* self) {
+    PyObject* res = PyList_New(self->ndims);
+    int i;
+    for(i=0; i<self->ndims; i++)
+        PyList_SET_ITEM(res, i, Py_BuildValue("l", self->dims[i]));
+    return res;
+}
+
+static PyObject*
+PyArray_gettypenum(PyArrayObject* self) {
+    return Py_BuildValue("i", self->typenum);
+}
+
+static PyMethodDef PyArray_methods[] = {
+    {"getbuffer", (PyCFunction)PyArray_getbuffer, METH_NOARGS,
+     "Return the address of the buffer",
+    }, 
+    {"getshape", (PyCFunction)PyArray_getshape, METH_NOARGS,
+     "Return the shape of the array",
+    },
+    {"gettypenum", (PyCFunction)PyArray_gettypenum, METH_NOARGS,
+     "Return the dtype num",
+    },
+    {NULL}  /* Sentinel */
+};
 
 static PyTypeObject PyArray_Type = {
     PyObject_HEAD_INIT(NULL)
@@ -30,21 +58,48 @@ static PyTypeObject PyArray_Type = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "fake C numpy array",      /* tp_doc */
+    0,  		               /* tp_traverse */
+    0,	    	               /* tp_clear */
+    0,		                   /* tp_richcompare */
+    0,		                   /* tp_weaklistoffset */
+    0,		                   /* tp_iter */
+    0,		                   /* tp_iternext */
+    PyArray_methods,           /* tp_methods */
+    0,                         /* tp_members */
 };
 
 
-static PyObject *
-fakenumpy_foo(PyObject *self, PyObject *args)
-{
-    PyObject *argList = Py_BuildValue("");
+PyObject*
+PyArray_SimpleNewFromData(int nd, npy_intp* dims, int typenum, void* data) {
     PyObject *obj = PyObject_CallObject((PyObject *) &PyArray_Type, NULL);
-    Py_DECREF(argList);
+    PyArrayObject* array = (PyArrayObject*)obj;
+    int i;
+    array->ndims = nd;
+    for(i=0; i<nd; i++)
+        array->dims[i] = dims[i];
+    array->typenum = typenum;
+    array->data = data;
+    return obj;
+}
+
+
+static PyObject *
+fakenumpy__frombuffer_2_2(PyObject *self, PyObject *args)
+{
+    npy_intp dims[2] = {2, 2};
+    long address;
+
+    if (!PyArg_ParseTuple(args, "l", &address))
+        return NULL;
+    void* data = (void*)address;
+
+    PyObject* obj = PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
     return obj;
 }
 
 
 static PyMethodDef fakenumpy_methods[] = {
-    {"foo", fakenumpy_foo, METH_VARARGS, "..."},
+    {"_frombuffer_2_2", fakenumpy__frombuffer_2_2, METH_VARARGS, "..."},
     {NULL}  /* Sentinel */
 };
 
