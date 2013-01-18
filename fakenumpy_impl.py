@@ -57,3 +57,7 @@ def PyArray_NDIM(array):
 def PyArray_DIMS(array):
     #array = from_C(array)
     return extra_data[array].dims
+
+@ffi.callback("PyObject*(PyObject*)")
+def PyArray_Return(array):
+    return array
