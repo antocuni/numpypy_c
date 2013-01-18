@@ -2,6 +2,14 @@ import cffi
 import cpyext_bridge
 import numpypy as np
 
+def to_C(obj):
+    addr = cpyext_bridge.to_C(obj)
+    return ffi.cast("PyObject*", addr)
+
+def from_C(ptr):
+    addr = ffi.cast("long", ptr)
+    return cpyext_bridge.from_C(addr)
+
 def build_typenum():
     d = {}
     for info in np.typeinfo.itervalues():
@@ -26,14 +34,18 @@ def PyArray_SimpleNewFromData(nd, dims, typenum, data):
     dtype = TYPENUM[typenum]
     data = ffi.cast("long", data)
     array = np.ndarray._from_shape_and_storage(shape, data, dtype)
-    array = cpyext_bridge.from_python(array)
-    return ffi.cast("PyObject*", array)
+    return to_C(array)
 
 @ffi.callback("int(PyObject*)")
 def PyArray_NDIM(array):
-    import pdb;pdb.set_trace()
+    array = from_C(array)
+    return len(array.shape)
 
 @ffi.callback("npy_intp*(PyObject*)")
 def PyArray_DIMS(array):
-    import pdb;pdb.set_trace()
-
+    array = from_C(array)
+    n = len(array.shape)
+    dims = ffi.new("npy_intp[]", n) # XXX: this leaks memory!!!
+    for i, dim in enumerate(array.shape):
+        dims[i] = dim
+    return dims

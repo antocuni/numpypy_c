@@ -1,7 +1,7 @@
 #include <Python.h>
 
 static PyObject*
-from_python(PyObject* self, PyObject* args) {
+to_C(PyObject* self, PyObject* args) {
     PyObject* obj;
     if (!PyArg_ParseTuple(args, "O", &obj))
         return NULL;
@@ -10,7 +10,7 @@ from_python(PyObject* self, PyObject* args) {
 }
 
 static PyObject*
-to_python(PyObject* self, PyObject* args) {
+from_C(PyObject* self, PyObject* args) {
     long addr;
     if (!PyArg_ParseTuple(args, "l", &addr))
         return NULL;
@@ -20,8 +20,8 @@ to_python(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef methods[] = {
-    {"from_python", from_python, METH_VARARGS, "..."},
-    {"to_python", to_python, METH_VARARGS, "..."},
+    {"to_C", to_C, METH_VARARGS, "..."},
+    {"from_C", from_C, METH_VARARGS, "..."},
     {NULL}  /* Sentinel */
 };
 
