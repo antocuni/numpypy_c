@@ -10,15 +10,7 @@ fakenumpy_test = Extension('fakenumpy_test',
                            depends = ['fakenumpy.h'],
                            extra_compile_args=['-g'])
 
-fakenumpy_test_direct = Extension('fakenumpy_test_direct',
-                                  sources = ['fakenumpy_test.c'],
-                                  depends = ['fakenumpy.h'],
-                                  extra_compile_args=['-g'],
-                                  define_macros=[('USE_NUMPY', None)])
-
 ext_modules = [cpyext_bridge, fakenumpy_test]
-if not is_pypy:
-    ext_modules.append(fakenumpy_test_direct)
 
 setup(name = 'fakenumpy',
       version = '0.1',

@@ -1,5 +1,6 @@
 import py
 import ctypes
+import fakenumpy_test
 try:
     import numpypy as np
     is_pypy = True
@@ -7,30 +8,20 @@ except ImportError:
     import numpy as np
     is_pypy = False
 
-
 def _import_c_tests(mod):
     glob = globals()
     for name, value in mod.__dict__.iteritems():
         if name.startswith('_test'):
             fn_name = name[1:]
-            if 'direct' in mod.__name__:
-                fn_name += '_direct'
             def fn(test=value):
                 test()
             fn.__name__ = fn_name
             glob[fn_name] = fn
 
-import fakenumpy_test
 _import_c_tests(fakenumpy_test)
-
-if not is_pypy:
-    import fakenumpy_test_direct
-    _import_c_tests(fakenumpy_test_direct)
 
 
 def test_SimpleNewFromData():
-    if not is_pypy:
-        py.test.skip("pypy only test")
     buf = (ctypes.c_double*4)(1, 2, 3, 4)
     addr = ctypes.cast(buf, ctypes.c_void_p).value
     array = fakenumpy_test._frombuffer_2_2(addr)

@@ -3,15 +3,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#ifdef USE_NUMPY
-     // test using the actual numpy implementation
-#    define INIT initfakenumpy_test_direct
-#    define MODNAME "fakenumpy_test_direct"
-#    include <numpy/arrayobject.h>
-#else
-#    define INIT initfakenumpy_test
-#    define MODNAME "fakenumpy_test"
+#ifdef PYPY_VERSION
 #    include "fakenumpy.h"
+#else
+#    include <numpy/arrayobject.h>
 #endif
 
 #define py_assert(e) {                                                  \
@@ -109,11 +104,11 @@ static PyMethodDef fakenumpy_test_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-INIT(void) 
+initfakenumpy_test(void) 
 {
     PyObject* m;
 
-    m = Py_InitModule3(MODNAME, fakenumpy_test_methods,
+    m = Py_InitModule3("fakenumpy_test", fakenumpy_test_methods,
                        "C tests for fakenumpy");
     import_array();
 }
