@@ -5,12 +5,12 @@ from distutils.core import setup, Extension
 cpyext_bridge = Extension('cpyext_bridge',
                           sources = ['cpyext_bridge.c'])
 
-fakenumpy_test = Extension('fakenumpy_test',
-                           sources = ['fakenumpy_test.c'],
-                           depends = ['fakenumpy.h'],
+c_test = Extension('c_test',
+                           sources = ['c_test.c'],
+                           depends = ['numpypy_c.h'],
                            extra_compile_args=['-g'])
 
-ext_modules = [cpyext_bridge, fakenumpy_test]
+ext_modules = [cpyext_bridge, c_test]
 
 setup(name = 'fakenumpy',
       version = '0.1',

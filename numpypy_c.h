@@ -1,5 +1,5 @@
-#ifndef FAKENUMPY_H
-#define FAKENUMPY_H
+#ifndef NUMPYPY_C_H
+#define NUMPYPY_C_H
 #include <Python.h>
 
 enum NPY_TYPES {    NPY_BOOL=0,
@@ -68,7 +68,7 @@ static npy_intp* (*PyArray_STRIDES)(PyObject* array);
 
 static int 
 import_array(void) {
-    PyObject* impl = PyImport_ImportModule("fakenumpy_impl");
+    PyObject* impl = PyImport_ImportModule("numpypy_c");
     if (!impl)
         return -1;
 

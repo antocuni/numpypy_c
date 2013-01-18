@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #ifdef PYPY_VERSION
-#    include "fakenumpy.h"
+#    include "numpypy_c.h"
 #else
 #    include <numpy/arrayobject.h>
 #endif
@@ -88,7 +88,7 @@ _test_STRIDES(PyObject* self, PyObject* args) {
 }
 
 
-static PyMethodDef fakenumpy_test_methods[] = {
+static PyMethodDef c_test_methods[] = {
     {"_frombuffer_2_2", _frombuffer_2_2, METH_VARARGS, "..."},
     {"_test_DIMS", _test_DIMS, METH_NOARGS, "..."},
     {"_test_Return", _test_Return, METH_NOARGS, "..."},
@@ -101,11 +101,11 @@ static PyMethodDef fakenumpy_test_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initfakenumpy_test(void) 
+initc_test(void) 
 {
     PyObject* m;
 
-    m = Py_InitModule3("fakenumpy_test", fakenumpy_test_methods,
-                       "C tests for fakenumpy");
+    m = Py_InitModule3("c_test", c_test_methods,
+                       "C tests for numpypy_c");
     import_array();
 }

@@ -1,6 +1,6 @@
 import py
 import ctypes
-import fakenumpy_test
+import c_test
 try:
     import numpypy as np
     is_pypy = True
@@ -18,13 +18,13 @@ def _import_c_tests(mod):
             fn.__name__ = fn_name
             glob[fn_name] = fn
 
-_import_c_tests(fakenumpy_test)
+_import_c_tests(c_test)
 
 
 def test_SimpleNewFromData():
     buf = (ctypes.c_double*4)(1, 2, 3, 4)
     addr = ctypes.cast(buf, ctypes.c_void_p).value
-    array = fakenumpy_test._frombuffer_2_2(addr)
+    array = c_test._frombuffer_2_2(addr)
     assert isinstance(array, np.ndarray)
     assert array.dtype == np.float64
     assert array[0, 0] == 1
