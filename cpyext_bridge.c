@@ -6,13 +6,13 @@ to_C(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "O", &obj))
         return NULL;
     Py_INCREF(obj);
-    return Py_BuildValue("l", (long)obj);
+    return Py_BuildValue("l", (Py_ssize_t)obj);
 }
 
 static PyObject*
 from_C(PyObject* self, PyObject* args) {
-    long addr;
-    if (!PyArg_ParseTuple(args, "l", &addr))
+    Py_ssize_t addr;
+    if (!PyArg_ParseTuple(args, "n", &addr))
         return NULL;
     PyObject* obj = (PyObject*)addr;
     Py_INCREF(obj); // XXX: we should think of a way to free it

@@ -14,7 +14,7 @@ def to_C(obj):
     return ffi.cast("PyObject*", addr)
 
 def from_C(ptr):
-    addr = ffi.cast("long", ptr)
+    addr = ffi.cast("ssize_t", ptr)
     return cpyext_bridge.from_C(addr)
 
 def build_typenum():
