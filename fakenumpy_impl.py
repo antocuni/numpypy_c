@@ -49,15 +49,18 @@ def PyArray_SimpleNewFromData(nd, dims, typenum, data):
     return addr
 
 @ffi.callback("int(PyObject*)")
-def PyArray_NDIM(array):
-    array = from_C(array)
+def PyArray_NDIM(addr):
+    array = from_C(addr)
     return len(array.shape)
 
 @ffi.callback("npy_intp*(PyObject*)")
-def PyArray_DIMS(array):
+def PyArray_DIMS(addr):
     #array = from_C(array)
-    return extra_data[array].dims
+    return extra_data[addr].dims
 
 @ffi.callback("PyObject*(PyObject*)")
-def PyArray_Return(array):
-    return array
+def PyArray_Return(addr):
+    array = from_C(addr)
+    assert len(array.shape) > 0 # I don't really understood what it's supposed
+                                # to happen for 0-dimensional arrays :)
+    return addr

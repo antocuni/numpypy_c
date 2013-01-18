@@ -51,7 +51,7 @@ _test_Return(PyObject* self, PyObject* args) {
     double data[4] = {1, 2, 3, 4};
     npy_intp dims[2] = {2, 2};
     PyObject* array = PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
-    py_assert(PyArray_Return(array) == array);
+    py_assert(PyArray_Return((PyArrayObject*)array) == array);
     Py_XDECREF(array);
     Py_RETURN_NONE;
 }

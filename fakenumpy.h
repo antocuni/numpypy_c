@@ -30,13 +30,14 @@ enum NPY_TYPES {    NPY_BOOL=0,
 
 #define PyArray_FLOAT64 NPY_DOUBLE
 typedef long npy_intp;
+typedef struct _PyArrayObject PyArrayObject;
 
 
 static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
 
 static int (*PyArray_NDIM)(PyObject* array);
 static npy_intp* (*PyArray_DIMS)(PyObject* array);
-static PyObject* (*PyArray_Return)(PyObject* array);
+static PyObject* (*PyArray_Return)(PyArrayObject* array);
 
 static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
     PyObject* callback = PyObject_GetAttrString(impl, name);
