@@ -32,7 +32,5 @@ PyMODINIT_FUNC
 initcpyext_bridge(void) 
 {
     PyObject* m;
-
-    m = Py_InitModule3("cpyext_bridge", methods,
-                       "cpyext bridge");
+    m = Py_InitModule3("cpyext_bridge", methods, "cpyext bridge");
 }

@@ -2,6 +2,13 @@ import cffi
 import cpyext_bridge
 import numpypy as np
 
+ffi = cffi.FFI()
+
+ffi.cdef("""
+typedef long npy_intp;
+typedef struct _object PyObject;
+""")
+
 def to_C(obj):
     addr = cpyext_bridge.to_C(obj)
     return ffi.cast("PyObject*", addr)
@@ -21,12 +28,15 @@ def build_typenum():
 
 TYPENUM = build_typenum()
 
-ffi = cffi.FFI()
+class ExtraData(object):
+    def __init__(self, array):
+        ndim = len(array.shape)
+        self.dims = ffi.new("npy_intp[]", ndim)
+        for i, dim in enumerate(array.shape):
+            self.dims[i] = dim
 
-ffi.cdef("""
-typedef long npy_intp;
-typedef struct _object PyObject;
-""")
+extra_data = {} # this is temporary, until we have an ndarray which can store
+                # an extra attribute
 
 @ffi.callback("PyObject*(int, npy_intp*, int, void*)")
 def PyArray_SimpleNewFromData(nd, dims, typenum, data):
@@ -34,7 +44,9 @@ def PyArray_SimpleNewFromData(nd, dims, typenum, data):
     dtype = TYPENUM[typenum]
     data = ffi.cast("long", data)
     array = np.ndarray._from_shape_and_storage(shape, data, dtype)
-    return to_C(array)
+    addr = to_C(array)
+    extra_data[addr] = ExtraData(array)
+    return addr
 
 @ffi.callback("int(PyObject*)")
 def PyArray_NDIM(array):
@@ -43,9 +55,5 @@ def PyArray_NDIM(array):
 
 @ffi.callback("npy_intp*(PyObject*)")
 def PyArray_DIMS(array):
-    array = from_C(array)
-    n = len(array.shape)
-    dims = ffi.new("npy_intp[]", n) # XXX: this leaks memory!!!
-    for i, dim in enumerate(array.shape):
-        dims[i] = dim
-    return dims
+    #array = from_C(array)
+    return extra_data[array].dims
