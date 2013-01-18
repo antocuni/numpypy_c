@@ -29,4 +29,11 @@ def PyArray_SimpleNewFromData(nd, dims, typenum, data):
     array = cpyext_bridge.from_python(array)
     return ffi.cast("PyObject*", array)
 
-PyArray_SimpleNewFromData_addr = int(ffi.cast("long", PyArray_SimpleNewFromData))
+@ffi.callback("int(PyObject*)")
+def PyArray_NDIM(array):
+    import pdb;pdb.set_trace()
+
+@ffi.callback("npy_intp*(PyObject*)")
+def PyArray_DIMS(array):
+    import pdb;pdb.set_trace()
+

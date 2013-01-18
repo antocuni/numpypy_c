@@ -31,44 +31,51 @@ enum NPY_TYPES {    NPY_BOOL=0,
 #define PyArray_FLOAT64 NPY_DOUBLE
 typedef long npy_intp;
 
-typedef struct {
-    PyObject_HEAD
-    int ndims;
-    npy_intp dims[10]; // max 10 dimensions
-    int typenum;
-    void* data;
-} PyArrayObject;
 
-static void** FakeNumPy_API;
+static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
 
+static int (*PyArray_NDIM)(PyObject* array);
+static npy_intp* (*PyArray_DIMS)(PyObject* array);
 
-//#define PyArray_SimpleNewFromData ((PyArray_SimpleNewFromData_type)FakeNumPy_API[0])
+static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
+    PyObject* callback = PyObject_GetAttrString(impl, name);
+    if (!callback)
+        return NULL;
+    
+    PyObject* addr_obj = PyObject_CallMethod(ffi, "cast", "(sO)", "long", callback);
+    if (!addr_obj)
+        return NULL;
 
-#define PyArray_NDIM(array) (array->ndims)
-#define PyArray_DIMS(array) (array->dims)
-#define PyArray_DATA(array) (array->data)
+    addr_obj = PyNumber_Int(addr_obj);
+    if (!addr_obj)
+        return NULL;
 
-// XXX: we don't properly implement PyArray_Return if ndims is ==0, because we
-// never needed it so far
-#define PyArray_Return(array) (assert(array->ndims > 0), array)
+    long addr = PyInt_AsLong(addr_obj);
+    if (addr == -1 && PyErr_Occurred())
+        return NULL;
 
+    return (void*)addr;
+}
 
-static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims, 
-                                              int typenum, void* data);
+#define IMPORT(name) {                          \
+    name = get_ptr(impl, ffi, #name);           \
+    if (!name)                                  \
+        return -1;                              \
+    }
 
 static int 
 import_array(void) {
     PyObject* impl = PyImport_ImportModule("fakenumpy_impl");
     if (!impl)
         return -1;
-    PyObject* addr_obj = PyObject_GetAttrString(impl, "PyArray_SimpleNewFromData_addr");
-    if (!addr_obj)
-        return -1;
-    long addr = PyInt_AsLong(addr_obj);
-    if (addr == -1 && PyErr_Occurred())
+
+    PyObject* ffi = PyObject_GetAttrString(impl, "ffi");
+    if (!ffi)
         return -1;
 
-    PyArray_SimpleNewFromData = (void*)addr;
+    IMPORT(PyArray_SimpleNewFromData);
+    IMPORT(PyArray_DIMS);
+    IMPORT(PyArray_NDIM);
 }
 
 #endif
