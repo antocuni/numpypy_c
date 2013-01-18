@@ -64,3 +64,9 @@ def PyArray_Return(addr):
     assert len(array.shape) > 0 # I don't really understood what it's supposed
                                 # to happen for 0-dimensional arrays :)
     return addr
+
+@ffi.callback("void*(PyObject*)")
+def PyArray_DATA(addr):
+    array = from_C(addr)
+    data, _ = array.__array_interface__['data']
+    return ffi.cast("void*", data)

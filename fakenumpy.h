@@ -38,6 +38,7 @@ static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typen
 static int (*PyArray_NDIM)(PyObject* array);
 static npy_intp* (*PyArray_DIMS)(PyObject* array);
 static PyObject* (*PyArray_Return)(PyArrayObject* array);
+static void* (*PyArray_DATA)(PyObject* array);
 
 static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
     PyObject* callback = PyObject_GetAttrString(impl, name);
@@ -79,6 +80,7 @@ import_array(void) {
     IMPORT(PyArray_DIMS);
     IMPORT(PyArray_NDIM);
     IMPORT(PyArray_Return);
+    IMPORT(PyArray_DATA);
 }
 
 #endif
