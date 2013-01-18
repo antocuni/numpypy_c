@@ -1,13 +1,32 @@
 import py
 import ctypes
 import fakenumpy
-import fakenumpy_test
 try:
     import numpypy as np
     is_pypy = True
 except ImportError:
     import numpy as np
     is_pypy = False
+
+
+def _import_c_tests(mod):
+    glob = globals()
+    for name, value in mod.__dict__.iteritems():
+        if name.startswith('_test'):
+            fn_name = name[1:]
+            if 'direct' in mod.__name__:
+                fn_name += '_direct'
+            def fn(test=value):
+                test()
+            fn.__name__ = fn_name
+            glob[fn_name] = fn
+
+import fakenumpy_test
+_import_c_tests(fakenumpy_test)
+
+if not is_pypy:
+    import fakenumpy_test_direct
+    _import_c_tests(fakenumpy_test_direct)
 
 
 if is_pypy:
@@ -48,13 +67,3 @@ def test_SimpleNewFromData():
     array[0, 0] = 42
     assert buf[0] == 42
 
-def _import_c_tests():
-    glob = globals()
-    for name, value in fakenumpy_test.__dict__.iteritems():
-        if name.startswith('_test'):
-            def fn(test=value):
-                test()
-            fn.__name__ = name[1:]
-            glob[name[1:]] = fn
-
-_import_c_tests()
