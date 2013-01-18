@@ -70,3 +70,8 @@ def PyArray_DATA(addr):
     array = from_C(addr)
     data, _ = array.__array_interface__['data']
     return ffi.cast("void*", data)
+
+@ffi.callback("npy_intp*(PyObject*)")
+def PyArray_STRIDES(addr):
+    array = from_C(addr)
+    import pdb;pdb.set_trace()

@@ -32,14 +32,6 @@ enum NPY_TYPES {    NPY_BOOL=0,
 typedef long npy_intp;
 typedef struct _PyArrayObject PyArrayObject;
 
-
-static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
-
-static int (*PyArray_NDIM)(PyObject* array);
-static npy_intp* (*PyArray_DIMS)(PyObject* array);
-static PyObject* (*PyArray_Return)(PyArrayObject* array);
-static void* (*PyArray_DATA)(PyObject* array);
-
 static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
     PyObject* callback = PyObject_GetAttrString(impl, name);
     if (!callback)
@@ -66,6 +58,14 @@ static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
         return -1;                              \
     }
 
+static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
+
+static int (*PyArray_NDIM)(PyObject* array);
+static npy_intp* (*PyArray_DIMS)(PyObject* array);
+static PyObject* (*PyArray_Return)(PyArrayObject* array);
+static void* (*PyArray_DATA)(PyObject* array);
+static npy_intp* (*PyArray_STRIDES)(PyObject* array);
+
 static int 
 import_array(void) {
     PyObject* impl = PyImport_ImportModule("fakenumpy_impl");
@@ -81,6 +81,7 @@ import_array(void) {
     IMPORT(PyArray_NDIM);
     IMPORT(PyArray_Return);
     IMPORT(PyArray_DATA);
+    IMPORT(PyArray_STRIDES);
 }
 
 #endif

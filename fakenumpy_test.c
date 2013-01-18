@@ -60,34 +60,32 @@ static PyObject*
 _test_DATA(PyObject* self, PyObject* args) {
     double data[4] = {1, 2, 3, 4};
     npy_intp dims[2] = {2, 2};
-    PyObject* array = PyArray_SimpleNewFromData(2, dims, 
-                                                                     PyArray_FLOAT64, data);
+    PyObject* array = PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
     void* data2 = PyArray_DATA(array);
     py_assert(data2 == (void*)(data));
     Py_XDECREF(array);
     Py_RETURN_NONE;
 }
 
-/* static PyObject* */
-/* _test_STRIDES(PyObject* self, PyObject* args) { */
-/*     double* data = (double*)0x01; // a non-NULL pointer */
-/*     npy_intp dims[3] = {3, 5, 7}; */
-/*     PyArrayObject* array = (PyArrayObject*)PyArray_SimpleNewFromData(3, dims, */
-/*                                                                      PyArray_FLOAT64, data); */
-/*     npy_intp* strides = PyArray_STRIDES(array); */
-/*     py_assert(strides[0] == 7*5*sizeof(double)); */
-/*     py_assert(strides[1] == 7*sizeof(double)); */
-/*     py_assert(strides[2] == sizeof(double)); */
-/*     Py_XDECREF(array); */
+static PyObject*
+_test_STRIDES(PyObject* self, PyObject* args) {
+    double* data = (double*)0x01; // a non-NULL pointer
+    npy_intp dims[3] = {3, 5, 7};
+    PyObject* array = PyArray_SimpleNewFromData(3, dims, PyArray_FLOAT64, data);
+    npy_intp* strides = PyArray_STRIDES(array);
+    py_assert(strides[0] == 7*5*sizeof(double));
+    py_assert(strides[1] == 7*sizeof(double));
+    py_assert(strides[2] == sizeof(double));
+    Py_XDECREF(array);
 
-/*     npy_intp dims2[2] = {4, 2}; */
-/*     array = (PyArrayObject*)PyArray_SimpleNewFromData(2, dims2, PyArray_FLOAT64, data); */
-/*     strides = PyArray_STRIDES(array); */
-/*     py_assert(strides[0] == 2*sizeof(double)); */
-/*     py_assert(strides[1] == sizeof(double)); */
-/*     Py_XDECREF(array); */
-/*     Py_RETURN_NONE; */
-/* } */
+    npy_intp dims2[2] = {4, 2};
+    array = PyArray_SimpleNewFromData(2, dims2, PyArray_FLOAT64, NULL);
+    strides = PyArray_STRIDES(array);
+    py_assert(strides[0] == sizeof(double));
+    py_assert(strides[1] == 4*sizeof(double));
+    Py_XDECREF(array);
+    Py_RETURN_NONE;
+}
 
 
 static PyMethodDef fakenumpy_test_methods[] = {
