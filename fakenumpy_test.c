@@ -22,6 +22,20 @@
         }                                                               \
     }
 
+static PyObject*
+_frombuffer_2_2(PyObject *self, PyObject *args)
+{
+    npy_intp dims[2] = {2, 2};
+    long address;
+
+    if (!PyArg_ParseTuple(args, "l", &address))
+        return NULL;
+    void* data = (void*)address;
+
+    PyObject* obj = PyArray_SimpleNewFromData(2, dims, PyArray_FLOAT64, data);
+    return obj;
+}
+
 
 static PyObject*
 _test_DIMS(PyObject* self, PyObject* args) {
@@ -83,6 +97,7 @@ _test_STRIDES(PyObject* self, PyObject* args) {
 
 
 static PyMethodDef fakenumpy_test_methods[] = {
+    {"_frombuffer_2_2", _frombuffer_2_2, METH_VARARGS, "..."},
     {"_test_DIMS", _test_DIMS, METH_NOARGS, "..."},
     {"_test_Return", _test_Return, METH_NOARGS, "..."},
     {"_test_DATA", _test_DATA, METH_NOARGS, "..."},

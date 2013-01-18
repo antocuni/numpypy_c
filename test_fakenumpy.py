@@ -1,6 +1,5 @@
 import py
 import ctypes
-import fakenumpy
 try:
     import numpypy as np
     is_pypy = True
@@ -29,35 +28,13 @@ if not is_pypy:
     _import_c_tests(fakenumpy_test_direct)
 
 
-if is_pypy:
-    def build_typedict():
-        d = {}
-        for info in np.typeinfo.itervalues():
-            if isinstance(info, tuple):
-                dtype = info[-1]
-                d[info[0]] = dtype
-                d[info[1]] = dtype
-        return d
-
-    TYPEDICT = build_typedict()
-
-    def _toarray(fakearray):
-        typenum = fakearray.gettypenum()
-        dtype = TYPEDICT[typenum]
-        return np.ndarray._from_shape_and_storage(fakearray.getshape(),
-                                                  fakearray.getbuffer(),
-                                                  dtype)
-
-
 def test_SimpleNewFromData():
     if not is_pypy:
         py.test.skip("pypy only test")
     buf = (ctypes.c_double*4)(1, 2, 3, 4)
     addr = ctypes.cast(buf, ctypes.c_void_p).value
-    fakearray = fakenumpy._frombuffer_2_2(addr)
-    assert fakearray.getbuffer() == addr
-    assert fakearray.getshape() == [2, 2]
-    array = _toarray(fakearray)
+    array = fakenumpy_test._frombuffer_2_2(addr)
+    assert isinstance(array, np.ndarray)
     assert array.dtype == np.float64
     assert array[0, 0] == 1
     assert array[0, 1] == 2

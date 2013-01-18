@@ -41,10 +41,8 @@ typedef struct {
 
 static void** FakeNumPy_API;
 
-typedef PyObject* (*PyArray_SimpleNewFromData_type)(int nd, npy_intp* dims, 
-                                                    int typenum, void* data);
 
-#define PyArray_SimpleNewFromData ((PyArray_SimpleNewFromData_type)FakeNumPy_API[0])
+//#define PyArray_SimpleNewFromData ((PyArray_SimpleNewFromData_type)FakeNumPy_API[0])
 
 #define PyArray_NDIM(array) (array->ndims)
 #define PyArray_DIMS(array) (array->dims)
@@ -54,36 +52,23 @@ typedef PyObject* (*PyArray_SimpleNewFromData_type)(int nd, npy_intp* dims,
 // never needed it so far
 #define PyArray_Return(array) (assert(array->ndims > 0), array)
 
+
+static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims, 
+                                              int typenum, void* data);
+
 static int 
 import_array(void) {
-    PyObject* fakenumpy = PyImport_ImportModule("fakenumpy");
-    PyObject *c_api = NULL;
+    PyObject* impl = PyImport_ImportModule("fakenumpy_impl");
+    if (!impl)
+        return -1;
+    PyObject* addr_obj = PyObject_GetAttrString(impl, "PyArray_SimpleNewFromData_addr");
+    if (!addr_obj)
+        return -1;
+    long addr = PyInt_AsLong(addr_obj);
+    if (addr == -1 && PyErr_Occurred())
+        return -1;
 
-    if (fakenumpy == NULL) {
-        PyErr_SetString(PyExc_ImportError, "fakenumpy failed to import");
-        return -1;
-    }
-
-    c_api = PyObject_GetAttrString(fakenumpy, "_API");
-    Py_DECREF(fakenumpy);
-    if (c_api == NULL) {
-        PyErr_SetString(PyExc_AttributeError, "_API not found");
-        return -1;
-    }
-
-    if (!PyCObject_Check(c_api)) {
-        PyErr_SetString(PyExc_RuntimeError, "_API is not PyCObject object");
-        Py_DECREF(c_api);
-        return -1;
-    }
-    FakeNumPy_API = (void **)PyCObject_AsVoidPtr(c_api);
-    
-    Py_DECREF(c_api);
-    if (FakeNumPy_API == NULL) {
-        PyErr_SetString(PyExc_RuntimeError, "_API is NULL pointer");
-        return -1;
-    }
-    return 0;
+    PyArray_SimpleNewFromData = (void*)addr;
 }
 
 #endif
