@@ -28,12 +28,17 @@ def build_typenum():
 
 TYPENUM = build_typenum()
 
+def to_c_array(ffi_type, seq):
+    n = len(seq)
+    c_array = ffi.new(ffi_type, n)
+    for i, val in enumerate(seq):
+        c_array[i] = val
+    return c_array
+
 class ExtraData(object):
     def __init__(self, array):
-        ndim = len(array.shape)
-        self.dims = ffi.new("npy_intp[]", ndim)
-        for i, dim in enumerate(array.shape):
-            self.dims[i] = dim
+        self.dims = to_c_array("npy_intp[]", array.shape)
+        self.strides = to_c_array("npy_intp[]", array.strides)
 
     @classmethod
     def get(cls, array):
@@ -78,4 +83,4 @@ def PyArray_DATA(addr):
 @ffi.callback("npy_intp*(PyObject*)")
 def PyArray_STRIDES(addr):
     array = from_C(addr)
-    import pdb;pdb.set_trace()
+    return ExtraData.get(array).strides
