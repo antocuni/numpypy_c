@@ -15,5 +15,6 @@ def pytest_configure(config):
         raise KeyboardInterrupt
     plat_dir = "lib.%s-%s" % (get_platform(), sys.version[0:3])
     build_dir = BUILD.join(plat_dir)
-    for so in build_dir.listdir('*.so'):
-        so.copy(ROOT)
+    for so in build_dir.visit('*.so'):
+        relname = so.relto(build_dir)
+        so.copy(ROOT.join(relname))

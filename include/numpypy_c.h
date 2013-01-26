@@ -68,7 +68,7 @@ static npy_intp* (*PyArray_STRIDES)(PyObject* array);
 
 static int 
 import_array(void) {
-    PyObject* impl = PyImport_ImportModule("numpypy_c");
+    PyObject* impl = PyImport_ImportModule("numpypy_c.impl");
     if (!impl)
         return -1;
 

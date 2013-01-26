@@ -1,14 +1,17 @@
 import sys
-is_pypy = hasattr(sys, 'pypy_version_info')
+import os
 from distutils.core import setup, Extension
 
-cpyext_bridge = Extension('cpyext_bridge',
-                          sources = ['cpyext_bridge.c'])
+ROOT = os.path.dirname(__file__)
+INCLUDE = os.path.join(ROOT, 'include')
 
-c_test = Extension('c_test',
-                           sources = ['c_test.c'],
-                           depends = ['numpypy_c.h'],
-                           extra_compile_args=['-g'])
+cpyext_bridge = Extension('numpypy_c.cpyext_bridge',
+                          sources = ['numpypy_c/cpyext_bridge.c'])
+
+c_test = Extension('numpypy_c.testing.c_test',
+                   sources = ['numpypy_c/testing/c_test.c'],
+                   depends = ['include/numpypy_c.h'],
+                   include_dirs = [INCLUDE])
 
 ext_modules = [cpyext_bridge, c_test]
 

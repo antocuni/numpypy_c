@@ -1,6 +1,6 @@
 import py
 import ctypes
-import c_test
+from numpypy_c.testing import c_test
 try:
     import numpypy as np
     is_pypy = True
