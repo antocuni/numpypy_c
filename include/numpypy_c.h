@@ -68,6 +68,7 @@ static npy_intp (*PyArray_DIM)(PyObject* array, int n);
 static PyObject* (*PyArray_Return)(PyArrayObject* array);
 static void* (*PyArray_DATA)(PyObject* array);
 static npy_intp* (*PyArray_STRIDES)(PyObject* array);
+static npy_intp (*PyArray_STRIDE)(PyObject* array, int n);
 
 static int 
 import_array(void) {
@@ -94,6 +95,7 @@ import_array(void) {
     IMPORT(PyArray_Return);
     IMPORT(PyArray_DATA);
     IMPORT(PyArray_STRIDES);
+    IMPORT(PyArray_STRIDE);
 }
 
 #endif

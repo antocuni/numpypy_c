@@ -89,3 +89,8 @@ def PyArray_DATA(addr):
 def PyArray_STRIDES(addr):
     array = from_C(addr)
     return ExtraData.get(array).strides
+
+@ffi.callback("npy_intp(PyObject*, int)")
+def PyArray_STRIDE(addr, i):
+    array = from_C(addr)
+    return ExtraData.get(array).strides[i]

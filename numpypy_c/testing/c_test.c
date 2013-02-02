@@ -80,6 +80,10 @@ _test_STRIDES(PyObject* self, PyObject* args) {
     py_assert(strides[0] == 7*5*sizeof(double));
     py_assert(strides[1] == 7*sizeof(double));
     py_assert(strides[2] == sizeof(double));
+    //
+    py_assert(PyArray_STRIDE(array, 0) == strides[0]);
+    py_assert(PyArray_STRIDE(array, 1) == strides[1]);
+    py_assert(PyArray_STRIDE(array, 2) == strides[2]);
     Py_XDECREF(array);
 
     /* the following test fails on pypy, because in numpy the strides are
