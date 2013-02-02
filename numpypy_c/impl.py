@@ -67,6 +67,11 @@ def PyArray_DIMS(addr):
     array = from_C(addr)
     return ExtraData.get(array).dims
 
+@ffi.callback("npy_intp(PyObject*, int)")
+def PyArray_DIM(addr, i):
+    array = from_C(addr)
+    return ExtraData.get(array).dims[i]
+
 @ffi.callback("PyObject*(PyObject*)")
 def PyArray_Return(addr):
     array = from_C(addr)

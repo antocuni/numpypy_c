@@ -42,6 +42,10 @@ _test_DIMS(PyObject* self, PyObject* args) {
     npy_intp* dims2 = PyArray_DIMS(array);
     py_assert(dims2[0] == 2);
     py_assert(dims2[1] == 2);
+    //
+    py_assert(PyArray_DIM(array, 0) == 2);
+    py_assert(PyArray_DIM(array, 1) == 2);
+    //
     Py_XDECREF(array);
     Py_RETURN_NONE;
 }
