@@ -70,7 +70,7 @@ def PyArray_DIMS(addr):
 @ffi.callback("npy_intp(PyObject*, int)")
 def PyArray_DIM(addr, i):
     array = from_C(addr)
-    return ExtraData.get(array).dims[i]
+    return array.shape[i]
 
 @ffi.callback("PyObject*(PyObject*)")
 def PyArray_Return(addr):
@@ -93,4 +93,4 @@ def PyArray_STRIDES(addr):
 @ffi.callback("npy_intp(PyObject*, int)")
 def PyArray_STRIDE(addr, i):
     array = from_C(addr)
-    return ExtraData.get(array).strides[i]
+    return array.strides[i]
