@@ -24,6 +24,7 @@ _import_c_tests(c_test)
 def test_SimpleNewFromData():
     buf = (ctypes.c_double*4)(1, 2, 3, 4)
     addr = ctypes.cast(buf, ctypes.c_void_p).value
+    addr = ctypes.c_long(addr).value # convert it to a signed value
     array = c_test._frombuffer_2_2(addr)
     assert isinstance(array, np.ndarray)
     assert array.dtype == np.float64
