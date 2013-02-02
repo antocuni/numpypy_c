@@ -58,8 +58,10 @@ static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
         return -1;                              \
     }
 
-static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
+static PyObject* _PyArray_Type;
+#define PyArray_Type (*_PyArray_Type)
 
+static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
 static int (*PyArray_NDIM)(PyObject* array);
 static npy_intp* (*PyArray_DIMS)(PyObject* array);
 static PyObject* (*PyArray_Return)(PyArrayObject* array);
@@ -68,6 +70,14 @@ static npy_intp* (*PyArray_STRIDES)(PyObject* array);
 
 static int 
 import_array(void) {
+    PyObject* np = PyImport_ImportModule("numpypy");
+    if (!np)
+        return NULL;
+    
+    _PyArray_Type = PyObject_GetAttrString(np, "ndarray");
+    if (!_PyArray_Type)
+        return NULL;
+
     PyObject* impl = PyImport_ImportModule("numpypy_c.impl");
     if (!impl)
         return -1;

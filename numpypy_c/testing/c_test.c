@@ -89,6 +89,15 @@ _test_STRIDES(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
+static PyObject*
+check_array(PyObject* self, PyObject* args) {
+    PyObject* obj;
+    if (!PyArg_ParseTuple(args, "O!", &PyArray_Type, &obj))
+        return NULL;
+    Py_INCREF(obj);
+    return obj;
+}
+
 
 static PyMethodDef c_test_methods[] = {
     {"_frombuffer_2_2", _frombuffer_2_2, METH_VARARGS, "..."},
@@ -96,6 +105,7 @@ static PyMethodDef c_test_methods[] = {
     {"_test_Return", _test_Return, METH_NOARGS, "..."},
     {"_test_DATA", _test_DATA, METH_NOARGS, "..."},
     {"_test_STRIDES", _test_STRIDES, METH_NOARGS, "..."},
+    {"check_array", check_array, METH_VARARGS, "..."},
     {NULL}  /* Sentinel */
 };
 

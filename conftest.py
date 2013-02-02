@@ -9,6 +9,7 @@ BUILD = ROOT.join('build')
 
 def pytest_configure(config):
     exe = sys.executable
+    ROOT.chdir()
     ret = os.system('"%s" "%s" build' % (exe, SETUP_PY))
     if ret != 0:
         print "build failed, quitting py.test"

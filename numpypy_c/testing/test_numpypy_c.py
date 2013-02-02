@@ -35,3 +35,7 @@ def test_SimpleNewFromData():
     array[0, 0] = 42
     assert buf[0] == 42
 
+def test_check_array():
+    a = np.array([1, 2, 3, 4])
+    assert c_test.check_array(a) is a
+    py.test.raises(TypeError, "c_test.check_array(42)")
