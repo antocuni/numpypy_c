@@ -72,11 +72,11 @@ static int
 import_array(void) {
     PyObject* np = PyImport_ImportModule("numpypy");
     if (!np)
-        return NULL;
+        return -1;
     
     _PyArray_Type = PyObject_GetAttrString(np, "ndarray");
     if (!_PyArray_Type)
-        return NULL;
+        return -1;
 
     PyObject* impl = PyImport_ImportModule("numpypy_c.impl");
     if (!impl)
