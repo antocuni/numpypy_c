@@ -19,7 +19,7 @@ c_test = Extension('numpypy_c.testing.c_test',
 
 ext_modules = [cpyext_bridge, c_test]
 
-setup(name = 'fakenumpy',
+setup(name = 'numpypy_c',
       version = '0.1',
-      description = 'fakenumpy',
+      description = 'numpypy_c',
       ext_modules = ext_modules)
