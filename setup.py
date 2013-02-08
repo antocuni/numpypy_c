@@ -1,6 +1,10 @@
 import sys
 import os
-from distutils.core import setup, Extension
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
+
 
 ROOT = os.path.dirname(__file__)
 INCLUDE = os.path.join(ROOT, 'include')
