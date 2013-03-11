@@ -58,6 +58,7 @@ static void* get_ptr(PyObject* impl, PyObject* ffi, const char* name) {
         return -1;                              \
     }
 
+static PyObject* (*PyArray_SimpleNew)(int nd, npy_intp* dims,  int typenum);
 static PyObject* (*PyArray_SimpleNewFromData)(int nd, npy_intp* dims,  int typenum, void* data);
 
 static int (*PyArray_NDIM)(PyObject* array);
@@ -76,6 +77,7 @@ import_array(void) {
     if (!ffi)
         return -1;
 
+    IMPORT(PyArray_SimpleNew);
     IMPORT(PyArray_SimpleNewFromData);
     IMPORT(PyArray_DIMS);
     IMPORT(PyArray_NDIM);

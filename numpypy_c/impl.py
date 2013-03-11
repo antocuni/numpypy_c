@@ -47,6 +47,15 @@ class ExtraData(object):
             data = array.__pypy_data__ = cls(array)
         return data
 
+@ffi.callback("PyObject*(int, npy_intp*, int)")
+def PyArray_SimpleNew(nd, dims, typenum):
+    shape = [dims[i] for i in range(nd)]
+    dtype = TYPENUM[typenum]
+    array = np.empty(shape, dtype)
+    ExtraData.get(array)
+    addr = to_C(array)
+    return addr
+
 @ffi.callback("PyObject*(int, npy_intp*, int, void*)")
 def PyArray_SimpleNewFromData(nd, dims, typenum, data):
     shape = [dims[i] for i in range(nd)]

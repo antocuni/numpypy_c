@@ -35,3 +35,10 @@ def test_SimpleNewFromData():
     array[0, 0] = 42
     assert buf[0] == 42
 
+
+def test_SimpleNew():
+    array = c_test._simple_new(4, 6)
+    assert array.shape == (4, 6)
+    assert array.dtype == np.float64
+    import pdb;pdb.set_trace()
+
