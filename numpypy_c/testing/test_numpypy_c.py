@@ -36,6 +36,11 @@ def test_SimpleNewFromData():
     array[0, 0] = 42
     assert buf[0] == 42
 
+def test_SimpleNew():
+    array = c_test._simple_new(4, 6)
+    assert array.shape == (4, 6)
+    assert array.dtype == np.float64
+
 def test_check_array():
     a = np.array([1, 2, 3, 4])
     assert c_test.check_array(a) is a

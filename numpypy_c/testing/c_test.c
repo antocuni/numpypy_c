@@ -31,6 +31,15 @@ _frombuffer_2_2(PyObject *self, PyObject *args)
     return obj;
 }
 
+static PyObject*
+_simple_new(PyObject *self, PyObject *args)
+{
+    npy_intp dims[2];
+    if (!PyArg_ParseTuple(args, "ll", &dims[0], &dims[1]))
+        return NULL;
+    return PyArray_SimpleNew(2, dims, PyArray_FLOAT64);
+}
+
 
 static PyObject*
 _test_DIMS(PyObject* self, PyObject* args) {
@@ -109,6 +118,7 @@ check_array(PyObject* self, PyObject* args) {
 
 static PyMethodDef c_test_methods[] = {
     {"_frombuffer_2_2", _frombuffer_2_2, METH_VARARGS, "..."},
+    {"_simple_new", _simple_new, METH_VARARGS, "..."},
     {"_test_DIMS", _test_DIMS, METH_NOARGS, "..."},
     {"_test_Return", _test_Return, METH_NOARGS, "..."},
     {"_test_DATA", _test_DATA, METH_NOARGS, "..."},
