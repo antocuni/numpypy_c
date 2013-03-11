@@ -40,5 +40,4 @@ def test_SimpleNew():
     array = c_test._simple_new(4, 6)
     assert array.shape == (4, 6)
     assert array.dtype == np.float64
-    import pdb;pdb.set_trace()
 
