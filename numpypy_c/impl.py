@@ -19,7 +19,7 @@ def from_C(ptr):
 
 def build_typenum():
     d = {}
-    for info in np.typeinfo.itervalues():
+    for info in np.core.multiarray.typeinfo.itervalues():
         if isinstance(info, tuple):
             dtype = info[-1]
             d[info[1]] = dtype
