@@ -20,6 +20,6 @@ c_test = Extension('numpypy_c.testing.c_test',
 ext_modules = [cpyext_bridge, c_test]
 
 setup(name = 'numpypy_c',
-      version = '0.1',
+      version = '0.2',
       description = 'numpypy_c',
       ext_modules = ext_modules)
