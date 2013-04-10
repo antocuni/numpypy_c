@@ -7,7 +7,7 @@ except ImportError:
 
 
 ROOT = os.path.dirname(__file__)
-INCLUDE = os.path.join(ROOT, 'include')
+INCLUDE = os.path.join(ROOT, 'numpypy_c', 'include')
 
 cpyext_bridge = Extension('numpypy_c.cpyext_bridge',
                           sources = ['numpypy_c/cpyext_bridge.c'])
@@ -24,4 +24,5 @@ setup(name = 'numpypy_c',
       description = 'numpypy_c',
       packages=['numpypy_c', 'numpypy_c.testing'],
       ext_modules = ext_modules,
+      package_data={'numpypy_c': ['include/*.h']},
       zip_safe=False)
