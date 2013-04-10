@@ -22,4 +22,6 @@ ext_modules = [cpyext_bridge, c_test]
 setup(name = 'numpypy_c',
       version = '0.2',
       description = 'numpypy_c',
-      ext_modules = ext_modules)
+      packages=['numpypy_c', 'numpypy_c.testing'],
+      ext_modules = ext_modules,
+      zip_safe=False)
