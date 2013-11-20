@@ -1,6 +1,10 @@
 import cffi
 import cpyext_bridge
-import numpypy as np
+try:
+    import _numpypy as np
+except ImportError:
+    # for PyPy < 2.2
+    import numpypy as np
 
 ffi = cffi.FFI()
 
@@ -19,7 +23,7 @@ def from_C(ptr):
 
 def build_typenum():
     d = {}
-    for info in np.core.multiarray.typeinfo.itervalues():
+    for info in np.multiarray.typeinfo.itervalues():
         if isinstance(info, tuple):
             dtype = info[-1]
             d[info[1]] = dtype

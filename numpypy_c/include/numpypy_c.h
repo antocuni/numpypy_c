@@ -73,7 +73,7 @@ static npy_intp (*PyArray_STRIDE)(PyObject* array, int n);
 
 static int 
 import_array(void) {
-    PyObject* np = PyImport_ImportModule("numpypy");
+    PyObject* np = PyImport_ImportModule("numpy");
     if (!np)
         return -1;
     
